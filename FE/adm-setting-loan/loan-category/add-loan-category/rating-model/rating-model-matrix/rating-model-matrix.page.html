@@ -1,0 +1,70 @@
+<ion-header>
+  <ion-toolbar style="z-index: 0;">
+    <ion-button slot="start" (click)="mainService.navBack()" fill="clear" mode="md" icon="arrow-back-outline"
+      style="margin-left: 8px;">
+      <ion-icon name="arrow-back-outline" style="color: #0C1E2E; font-size: 24px;"></ion-icon>
+    </ion-button>
+    <ion-title mode="ios" class="ion-text-center text-large-blue">
+      Matrix Detail
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-light-grey">
+  <ion-refresher [disabled]="canRefresh" slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-row style="height: 100%;">
+    <ion-col class="ion-no-padding">
+      <div class="content" style="height: 100%;">
+        <form (ngSubmit)="onSubmit()" class="form" #matrixform="ngForm">
+          <ion-list style="height: 100%;">
+            <ion-row class="label-group">
+              <ion-label class="text-medium-red">*Required Field</ion-label>
+            </ion-row>
+
+            <ion-row style="margin-top: 10px;">
+              <p-floatLabel class="hceazy-select">
+                <p-dropdown [options]="listRating" ngModel [(ngModel)]="matrix.paRatingId1" name="paRatingId1"
+                  optionLabel="name" optionValue="id" inputId="float-label" [required]="true">
+                  <ng-template pTemplate="dropdownicon">
+                    <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                  </ng-template>
+                </p-dropdown>
+                <label for="float-label">Tahun 1<ion-text color="danger">*</ion-text></label>
+              </p-floatLabel>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <p-floatLabel class="hceazy-select">
+                <p-dropdown [options]="listRating" ngModel [(ngModel)]="matrix.paRatingId2" name="paRatingId2"
+                  optionLabel="name" optionValue="id" inputId="float-label" [required]="true">
+                  <ng-template pTemplate="dropdownicon">
+                    <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                  </ng-template>
+                </p-dropdown>
+                <label for="float-label">Tahun 2<ion-text color="danger">*</ion-text></label>
+              </p-floatLabel>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <p-floatLabel class="hceazy-select">
+                <p-dropdown [options]="listLookupResult" ngModel [(ngModel)]="matrix.result" name="result"
+                  inputId="float-label" [required]="true">
+                  <ng-template pTemplate="dropdownicon">
+                    <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                  </ng-template>
+                </p-dropdown>
+                <label for="float-label">Result<ion-text color="danger">*</ion-text></label>
+              </p-floatLabel>
+            </ion-row>
+          </ion-list>
+
+          <ion-button class="blue-button" color="primary" [disabled]="!matrixform.valid" type="submit">
+            Submit
+          </ion-button>
+        </form>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-content>

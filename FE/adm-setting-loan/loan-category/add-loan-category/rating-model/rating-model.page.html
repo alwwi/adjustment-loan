@@ -1,0 +1,206 @@
+<ion-header>
+  <ion-toolbar style="z-index: 0;">
+    <ion-button slot="start" (click)="mainService.navBack()" fill="clear" mode="md" icon="arrow-back-outline"
+      style="margin-left: 8px;">
+      <ion-icon name="arrow-back-outline" style="color: #0C1E2E; font-size: 24px;"></ion-icon>
+    </ion-button>
+    <ion-title mode="ios" class="ion-text-center text-large-blue">
+      Rating Model Detail
+    </ion-title>
+  </ion-toolbar>
+  <ion-row>
+    <ion-col class="ion-no-padding">
+      <div class="hceazy-segment" style="padding: 20px 0px !important;">
+        <ion-segment [scrollable]="true" [value]="segmentValue" (ionChange)="selectValue($event)">
+          <ion-segment-button mode="ios" *ngFor="let p of listSegment" [value]="p.value" class="profile-segment">
+            <ion-label>{{p.title}}</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-header>
+
+<ion-content class="bg-light-grey">
+  <ion-refresher [disabled]="canRefresh" slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-row style="height: 100%;">
+    <ion-col class="ion-no-padding">
+      <div class="content" style="height: 100%;">
+        <form (ngSubmit)="onSubmit()" class="form" #ratingmodelform="ngForm" *ngIf="segmentValue == 'General'">
+          <ion-list style="height: 100%;">
+            <ion-row class="label-group">
+              <ion-label class="text-medium-red">*Required Field</ion-label>
+            </ion-row>
+
+            <ion-row style="margin-top: 10px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Name" name="name" ngModel
+                  [(ngModel)]="ratingModel.name" required="true" />
+                <label class="hceazy-label" for="name">
+                  Name<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <textarea id="description" name="description" class="hceazy-textarea" placeholder="Description"
+                  maxlength="500" ngModel [(ngModel)]="ratingModel.description">
+                </textarea>
+                <label class="hceazy-label" for="description">
+                  Description
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <p-floatLabel class="hceazy-select">
+                <p-dropdown [options]="listLookupYear" ngModel [(ngModel)]="ratingModel.lookupYear" name="lookupYear"
+                  inputId="float-label" [required]="true" (onChange)="changeLookupYear()">
+                  <ng-template pTemplate="dropdownicon">
+                    <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                  </ng-template>
+                </p-dropdown>
+                <label for="float-label">Year(s) Before<ion-text color="danger">*</ion-text></label>
+              </p-floatLabel>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <p-floatLabel class="hceazy-select">
+                <p-dropdown [options]="listRating" ngModel [(ngModel)]="ratingModel.paRatingId" name="paRatingId"
+                  optionLabel="name" optionValue="id" inputId="float-label" [required]="ratingModel.lookupYear == '1'"
+                  [disabled]="ratingModel.lookupYear == '2'">
+                  <ng-template pTemplate="dropdownicon">
+                    <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                  </ng-template>
+                </p-dropdown>
+                <label for="float-label">Minimum Grade<ion-text color="danger"
+                    *ngIf="ratingModel.lookupYear == '1'">*</ion-text></label>
+              </p-floatLabel>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Start Date" id="startDate"
+                  name="startDate" readonly="true" required value="{{ ratingModel.startDate | date: 'dd-MMM-yyyy'}}" />
+                <label class="hceazy-label" for="startDate">
+                  Start Date<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+
+              <ion-modal id="input-date" trigger="startDate" mode="ios">
+                <ng-template>
+                  <ion-content scrollY="false" scrollX="false">
+                    <ion-row>
+                      <ion-col>
+                        <ion-datetime (ionChange)="onChangeDate('start')" max="2050"
+                          style="min-width: 100%; max-height: 350px; border-radius: 10px;" mode="ios" doneText="Set"
+                          cancelText="Cancel" showDefaultButtons="true" required ngModel
+                          [(ngModel)]="ratingModel.startDate" name="startDate" presentation="date">
+                        </ion-datetime>
+                      </ion-col>
+                    </ion-row>
+                  </ion-content>
+                </ng-template>
+              </ion-modal>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="End Date" id="endDate"
+                  name="endDate" readonly="true" required value="{{ ratingModel.endDate | date: 'dd-MMM-yyyy'}}" />
+                <label class="hceazy-label" for="endDate">
+                  End Date<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+
+              <ion-modal id="input-date" trigger="endDate" mode="ios">
+                <ng-template>
+                  <ion-content scrollY="false" scrollX="false">
+                    <ion-row>
+                      <ion-col>
+                        <ion-datetime (ionChange)="onChangeDate('end')" max="2050"
+                          style="min-width: 100%; max-height: 350px; border-radius: 10px;" mode="ios" doneText="Set"
+                          cancelText="Cancel" showDefaultButtons="true" required ngModel
+                          [(ngModel)]="ratingModel.endDate" name="endDate" presentation="date">
+                        </ion-datetime>
+                      </ion-col>
+                    </ion-row>
+                  </ion-content>
+                </ng-template>
+              </ion-modal>
+            </ion-row>
+          </ion-list>
+
+          <ion-button class="blue-button" color="primary"
+            [disabled]="!ratingmodelform.valid || ratingModel.startDate == null || ratingModel.endDate == null"
+            type="submit">
+            Submit
+          </ion-button>
+        </form>
+
+        <div *ngIf="segmentValue != 'General'" style="height: 100%;">
+          <div *ngIf="isSkeletonLoading">
+            <ion-row *ngFor="let p of [].constructor(5)">
+              <ion-skeleton-text animated
+                style="height: 150px; border-radius: 10px; width: 100%; margin-bottom: 10px;"></ion-skeleton-text>
+            </ion-row>
+          </div>
+
+          <ion-row *ngIf="isEmpty && !isSkeletonLoading"
+            style="height: 100%; display: flex; justify-content: center; align-items: center;">
+            <app-no-data></app-no-data>
+          </ion-row>
+
+          <div *ngIf="!isEmpty && !isSkeletonLoading">
+            <ion-row *ngFor="let p of listData;" style="display: flex; flex-direction: column;">
+              <ion-card class="card-item">
+                <ion-card-header style="padding: 10px;">
+                  <ion-card-title class="text-medium">Tahun 1 : {{ p.paRatingName1 }}</ion-card-title>
+                  <ion-card-title class="text-medium">Tahun 2 : {{ p.paRatingName2 }}</ion-card-title>
+                  <ion-card-title class="text-medium">{{ p.result }}</ion-card-title>
+                </ion-card-header>
+
+                <div class="button-container">
+                  <ion-button color="primary" class="ion-text-capitalize text-small1-white edit-btn"
+                    (click)="addDetail(p.id)">Edit
+                    <ion-icon src="../../../../../../assets/icon/general/edit.svg" slot="start"></ion-icon>
+                  </ion-button>
+                  <ion-button color="danger" class="ion-text-capitalize text-small1-white remove-btn"
+                    style="width: 100px !important;" (click)="onRemove(p)">Remove
+                    <ion-icon name="trash" slot="start"></ion-icon>
+                  </ion-button>
+                </div>
+              </ion-card>
+            </ion-row>
+            <ion-row class="load-more" *ngIf="isLoadMoreShow && !isSkeletonLoading">
+              <div *ngIf="!isSpinnerShow" style="width: 100%;">
+                <ion-button color="yellow" class="text-medium-blue ion-text-capitalize" (click)="loadMore()">
+                  Load More Results
+                </ion-button>
+              </div>
+              <div size="12" *ngIf="isSpinnerShow">
+                <ion-spinner name="circles"></ion-spinner>
+              </div>
+            </ion-row>
+          </div>
+        </div>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-content>
+
+<ion-footer class="ion-no-border" *ngIf="segmentValue != 'General'">
+  <ion-toolbar class="ion-text-center">
+    <ion-row>
+      <ion-col size="12">
+        <ion-button color="warning" (click)="addDetail(null)" class="blue-button ion-text-capitalize">
+          <ion-icon name="add"></ion-icon>
+          Add {{segmentValue}}
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

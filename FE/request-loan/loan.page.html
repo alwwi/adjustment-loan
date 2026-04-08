@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar style="z-index: 0;">
+    <ion-button slot="start" (click)="mainService.navBack()" fill="clear" mode="md" icon="arrow-back-outline"
+      style="margin-left: 8px;">
+      <ion-icon name="arrow-back-outline" style="color: #0C1E2E; font-size: 24px;"></ion-icon>
+    </ion-button>
+    <ion-title mode="ios" class="ion-text-center text-large-blue">
+      Loan
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-row>
+    <ion-col>
+      <div class="content">
+        <list-menu [menuList]="listMenu" [action]="action"></list-menu>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-content>

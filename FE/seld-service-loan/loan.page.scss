@@ -1,0 +1,51 @@
+.row-loan-page {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.page-loan {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle-loan-page-active {
+  background: #FCD116;
+
+  ion-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0F2B5B;
+  }
+}
+
+.circle-loan-page {
+  background: #B6B7BB;
+
+  ion-text {
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+  }
+}
+
+.circle-loan-page,
+.circle-loan-page-active {
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.list-attachment {
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-prev {
+  color: #0F2B5B;
+}

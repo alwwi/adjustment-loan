@@ -1,0 +1,88 @@
+<ion-header>
+  <ion-toolbar style="z-index: 0;">
+    <ion-button slot="start" (click)="mainService.navBack()" fill="clear" mode="md" icon="arrow-back-outline"
+      style="margin-left: 8px;">
+      <ion-icon name="arrow-back-outline" style="color: #0C1E2E; font-size: 24px;"></ion-icon>
+    </ion-button>
+    <ion-title mode="ios" class="ion-text-center text-large-blue">
+      Upload Transfer Evidence
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-light-grey">
+  <ion-row style="height: 100%;">
+    <ion-col class="ion-no-padding">
+      <div class="content" style="height: 100%;">
+        <form (ngSubmit)="onSubmit()" class="form" #uploadform="ngForm">
+          <ion-list>
+            <ion-row class="label-group">
+              <ion-label class="text-medium-red">*Required Field</ion-label>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="End Date" id="transferDate"
+                  name="transferDate" readonly="true" required value="{{ transferDate | date: 'dd-MMM-yyyy'}}" />
+                <label class="hceazy-label" for="transferDate">
+                  Transfer Date<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+
+              <ion-modal id="input-date" trigger="transferDate" mode="ios">
+                <ng-template>
+                  <ion-content scrollY="false" scrollX="false">
+                    <ion-row>
+                      <ion-col>
+                        <ion-datetime (ionChange)="onChangeDate()" max="2050"
+                          style="min-width: 100%; max-height: 350px; border-radius: 10px;" mode="ios" doneText="Set"
+                          cancelText="Cancel" showDefaultButtons="true" required ngModel [(ngModel)]="transferDate"
+                          name="transferDate" presentation="date">
+                        </ion-datetime>
+                      </ion-col>
+                    </ion-row>
+                  </ion-content>
+                </ng-template>
+              </ion-modal>
+            </ion-row>
+
+            <ion-row class="label-group" style="margin-top: 20px; justify-content: space-between;">
+              <ion-label class="text-medium-blue">Attach Document
+                <ion-text color="danger">* (Max file size 5 MB)*</ion-text>
+              </ion-label>
+            </ion-row>
+
+            <ion-row class="file-upload-row">
+              <ion-row>
+                <p-fileUpload class="upload-file" *ngIf="mainService.platformName == 'web'" #fileUpload
+                  chooseIcon="none" name="dataFile" [accept]="acceptType" chooseLabel="Choose File"
+                  (onSelect)="uploadFile($event)" required="">
+                </p-fileUpload>
+              </ion-row>
+              <ion-button *ngIf="mainService.platformName != 'web'" class="upload-file-button" (click)="uploadFile()">
+                <span>Choose File</span>
+              </ion-button>
+              <ion-label class="file-label">{{nameFile}}</ion-label>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <textarea id="remarks" name="remarks" class="hceazy-textarea" placeholder="Remarks" ngModel
+                  [(ngModel)]="remark" maxlength="500" required>
+                </textarea>
+                <label class="hceazy-label" for="remark">
+                  Remark<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+            </ion-row>
+          </ion-list>
+
+          <ion-button class="blue-button" color="primary"
+            [disabled]="!uploadform.valid || dataFile == null || transferDate == null" type="submit">
+            Submit
+          </ion-button>
+        </form>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-content>

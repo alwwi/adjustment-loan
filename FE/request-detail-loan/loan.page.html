@@ -1,0 +1,271 @@
+<ion-header>
+  <ion-toolbar style="z-index: 0;">
+    <ion-button slot="start" (click)="mainService.navBack()" fill="clear" mode="md" icon="arrow-back-outline"
+      style="margin-left: 8px;">
+      <ion-icon name="arrow-back-outline" style="color: #0C1E2E; font-size: 24px;"></ion-icon>
+    </ion-button>
+    <ion-title mode="ios" class="ion-text-center text-large-blue">
+      Loan Detail
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-light-grey">
+  <ion-row style="height: 100%;">
+    <ion-col class="ion-no-padding">
+      <ion-row style="display: grid;">
+        <div class="isAdmin-header">
+          <div class="card-blue card-admin">
+            <ion-skeleton-text *ngIf="isSkeletonLoadingHeader" animated
+              style="width: 70px;height: 70px; border-radius: 50%;" class="img-profile"></ion-skeleton-text>
+            <ion-avatar *ngIf="!isSkeletonLoadingHeader" class="flex-center img-profile">
+              <img
+                [src]="dataDetail.employeeProfile == null || dataDetail.employeeProfile.includes('null') ? mainService.defaultImageProfile : dataDetail.employeeProfile"
+                class="avatar-profile" alt="">
+            </ion-avatar>
+            <ion-label *ngIf="!isSkeletonLoadingHeader" class="text-large-white">{{employee?.name}}</ion-label>
+            <ion-label *ngIf="!isSkeletonLoadingHeader" class="text-medium-white">{{employee?.employeeNo}}</ion-label>
+            <ion-label *ngIf="!isSkeletonLoadingHeader" class="text-medium-white ion-text-center">{{employee?.positionName}}
+            </ion-label>
+            <ion-skeleton-text *ngIf="isSkeletonLoadingHeader" animated
+              style="width: 100px;height: 10px;"></ion-skeleton-text>
+            <ion-skeleton-text *ngIf="isSkeletonLoadingHeader" animated
+              style="width: 100px;height: 10px;"></ion-skeleton-text>
+            <ion-skeleton-text *ngIf="isSkeletonLoadingHeader" animated
+              style="width: 100px;height: 10px;"></ion-skeleton-text>
+          </div>
+        </div>
+        <div class="segment-approval">
+          <div class="hceazy-segment" style="padding: 20px !important;">
+            <ion-segment [scrollable]="true" [value]="segmentValue" (ionChange)="selectValue($event)">
+              <ion-segment-button mode="ios" *ngFor="let p of listSegment" [value]="p.value" class="profile-segment">
+                <ion-label>{{p.title}}</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+          </div>
+          <div class="content-approval" *ngIf="!isSkeletonLoading && segmentValue == 'General'">
+            <ion-row style="margin-top: 20px;">
+              <ion-col size="12" class="ion-no-padding">
+                <ion-label class="text-small1-grey">Request Information</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-blue">Request Number</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-blue">Request Date</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-bold">{{dataDetail?.requestNo ?? '-'}}</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-bold">{{dataDetail?.requestDate | date:
+                  format.dateFormatHhMm}}</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-blue">Status</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <div [ngClass]="dataDetail?.status == 'Approved' ? 'badge-success' : dataDetail?.status == 'In Progress' ? 'badge-blue'
+                  : dataDetail?.status == 'Canceled' ? 'badge-warning' : 'badge-danger'">
+                  <ion-text>{{dataDetail?.status}}</ion-text>
+                </div>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+              </ion-col>
+
+              <ion-col size="12" class="ion-no-padding" style="margin-top: 10px;">
+                <ion-label class="text-small1-grey">Loan Information</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-blue">Type</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-blue">Category</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-bold">{{dataDetail?.loanTypeName ?? '-'}}</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-bold">{{dataDetail?.categoryName ?? '-'}}</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-blue">Amount (rupiah)</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-blue">Tenor (month)</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-bold">{{dataDetail?.amount | number}}</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-bold">{{dataDetail?.tenor | number}}</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-blue">Down Payment (rupiah)</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-blue" *ngIf="dataDetail?.simulation">Monthly Installment
+                  (rupiah)</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-bold">{{dataDetail?.downPayment | number}}</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-bold" *ngIf="dataDetail?.simulation">{{dataDetail?.monthlyInstallment |
+                  number}}</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-blue">Amount OTR (rupiah)</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-blue">Loan Date</ion-label>
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-bold">{{dataDetail?.amountOtr |
+                  number}}</ion-label>      
+              </ion-col>
+              <ion-col size="6" class="ion-no-padding">
+                <ion-label class="text-small1-bold">{{dataDetail?.loanDate | date : format.dateFormat}}</ion-label>
+              </ion-col>
+
+              <ion-col size="12" class="ion-no-padding" style="margin-top: 10px;">
+                <ion-label class="text-small1-grey">Additional Information</ion-label>
+              </ion-col>
+              <ion-col size="12" class="ion-no-padding">
+                <ion-label class="text-small1-blue">Remark</ion-label>
+              </ion-col>
+              <ion-col size="12" class="ion-no-padding">
+                <ion-label class="text-small1-bold">{{dataDetail?.remark ?? '-'}}</ion-label>
+              </ion-col>
+              <ion-row *ngIf="dataDetail?.status == 'Rejected'">
+                <ion-col size="12" class="ion-no-padding">
+                  <ion-label class="text-small1-blue">Reject Reason</ion-label>
+                </ion-col>
+                <ion-col size="12" class="ion-no-padding">
+                  <ion-label class="text-small1-bold">{{dataDetail?.reasonReject ?? '-'}}</ion-label>
+                </ion-col>
+              </ion-row>
+
+              <ion-col size="12" class="ion-no-padding" style="margin-top: 10px;">
+                <ion-label class="text-small1-grey">Supporting Document</ion-label>
+              </ion-col>
+              <ion-row *ngFor="let item of dataDetail?.attachmentDetails" style="width: 100%;">
+                <ion-col size="12" class="ion-no-padding">
+                  <ion-label class="text-small1-grey">{{item.loanAttachmentName}}</ion-label>
+                </ion-col>
+                <ion-col size="12" class="ion-no-padding">
+                  <ion-button class="blue-button" style="width: 100%;" shape="round" color="secondary"
+                    [disabled]="item.path == null || item.path == ''" (click)="downloadDocs(item.path)">
+                    <ion-img style="margin-right: 5px;" src="../../../assets/icon/self-service/download.png"></ion-img>
+                    <ion-label class="text-medium-white">
+                      Download
+                    </ion-label>
+                  </ion-button>
+                </ion-col>
+              </ion-row>
+
+              <div style="width: 100%;"
+                *ngIf="action == 'Need Approval' && dataDetail?.needAdditionalInformation && dataDetail?.approvalLevelFleet == dataDetail?.currentApprovalLevel">
+                <div style="width: 100%;" *ngFor="let item of dataDetail?.loanFeedbackFleetListDTOS; let i = index;">
+                  <ion-row style="margin-top: 10px;"
+                    *ngIf="(!dataDetail?.simulation && (item.valueSource == 'Monthly Installment' || item.valueSource == 'Monthly Installment MOP')) || item.valueSource != 'Monthly Installment' || item.valueSource == 'Monthly Installment MOP'">
+                    <div class="hceazy-input-wrapper">
+                      <input autocomplete="off" class="hceazy-input" type="text" placeholder="{{item.name}}"
+                        [name]="item.name" item.name [value]="confirmPayload[i]" required="true"
+                        (input)="changeAmount($event, i)"
+                        [disabled]="(dataDetail?.approvalLevelFleet != dataDetail?.currentApprovalLevel) || item.value != null" />
+                      <label class="hceazy-label" for="{{item.name}}">
+                        {{item.name}} (rupiah)
+                      </label>
+                    </div>
+                  </ion-row>
+                </div>
+              </div>
+
+              <ion-col size="12" class="ion-no-padding" style="margin-top: 10px;"
+                *ngIf="dataDetail?.status == 'In Progress' && action != 'Need Approval'">
+                <ion-button class="blue-button" style="width: 100%;" shape="round" color="danger"
+                  (click)="cancelRequest()">
+                  <ion-label class="text-medium-white">
+                    Cancel
+                  </ion-label>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+
+            <ion-row *ngIf="dataDetail?.status != 'Completed' && action == 'Need Approval'"
+              style="width: 100%; justify-content: space-between; margin-top: 30px;">
+              <ion-col size="5.5" class="ion-no-padding">
+                <ion-button class="blue-button" style="width: 100%;" shape="round" color="danger"
+                  (click)="confirmAction('Reject')">
+                  <ion-label class="text-medium-white">
+                    REJECT
+                  </ion-label>
+                </ion-button>
+              </ion-col>
+              <ion-col size="5.5" class="ion-no-padding">
+                <ion-button class="blue-button" style="width: 100%;" shape="round" color="success"
+                  (click)="confirmAction('Approve')">
+                  <ion-label class="text-medium-white">
+                    APPROVE
+                  </ion-label>
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </div>
+
+          <div *ngIf="segmentValue == 'Approval History'" style="padding: 10px 20px;">
+            <div *ngIf="isSkeletonLoading">
+              <ion-row *ngFor="let p of [].constructor(5)">
+                <ion-skeleton-text animated
+                  style="height: 150px; border-radius: 10px; width: 100%; margin-bottom: 10px;"></ion-skeleton-text>
+              </ion-row>
+            </div>
+
+            <ion-row *ngIf="isEmpty && !isSkeletonLoading"
+              style="height: 100%; display: flex; justify-content: center; align-items: center;">
+              <app-no-data></app-no-data>
+            </ion-row>
+
+            <div *ngIf="!isEmpty && !isSkeletonLoading">
+              <ion-row *ngFor="let p of listData;" style="display: flex; flex-direction: column;">
+                <ion-card class="card-item">
+                  <div style="display: flex; column-gap: 5px; padding: 5px;">
+                    <ion-avatar class="flex-center">
+                      <img [src]="p?.approverProfile ?? mainService.defaultImageProfile" class="avatar-profile" alt="">
+                    </ion-avatar>
+                    <div style="display: flex; flex-direction: column; width: 100%;">
+                      <ion-card-header style="padding: 10px;">
+                        <ion-card-title class="text-medium">{{ p?.approverDetail?.name }}</ion-card-title>
+                      </ion-card-header>
+
+                      <ion-card-content class="text-small1-dark-teal" style="padding: 0 10px 10px; font-weight: 400;">
+                        {{ p.approverDetail?.employeeNo }}
+                        <br>
+                        {{ p.approverDetail?.positionName }}
+                        <br>
+                        {{p.actionDate | date: format.dateFormatHhMm}}
+                      </ion-card-content>
+                    </div>
+                  </div>
+                  <div class="button-container" style="justify-content: space-between !important;">
+                    <div [ngClass]="p.status == 'Approved' ? 'badge-success' : p.status == 'In Progress' ? 'badge-blue'
+                      : p.status == 'Canceled' ? 'badge-warning' : 'badge-danger'">
+                      <ion-text>{{p.status}}</ion-text>
+                    </div>
+                    <ion-button *ngIf="p.actionNote != ''" color="primary"
+                      class="ion-text-capitalize text-small1-white remove-btn" (click)="showNote(p.actionNote)">Note
+                      <ion-icon src="../../../../../../assets/icon/general/edit.svg" slot="start"></ion-icon>
+                    </ion-button>
+                  </div>
+                </ion-card>
+              </ion-row>
+            </div>
+          </div>
+        </div>
+      </ion-row>
+    </ion-col>
+  </ion-row>
+</ion-content>

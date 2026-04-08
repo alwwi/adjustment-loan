@@ -1,0 +1,354 @@
+<ion-header>
+  <ion-toolbar style="z-index: 0;">
+    <ion-button slot="start" (click)="mainService.navBack()" fill="clear" mode="md" icon="arrow-back-outline"
+      style="margin-left: 8px;">
+      <ion-icon name="arrow-back-outline" style="color: #0C1E2E; font-size: 24px;"></ion-icon>
+    </ion-button>
+    <ion-title mode="ios" class="ion-text-center text-large-blue">
+      Loan
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-light-grey">
+  <ion-row style="height: 100%;">
+    <ion-col>
+      <div [ngClass]="isAdmin ? 'isAdmin-content' : 'content'" style="height: 100%;">
+        <div class="isAdmin-header" *ngIf="isAdmin">
+          <div class="card-blue card-admin">
+            <ion-skeleton-text *ngIf="isSkeletonLoading" animated style="width: 70px;height: 70px; border-radius: 50%;"
+              class="img-profile"></ion-skeleton-text>
+            <ion-avatar *ngIf="!isSkeletonLoading" class="flex-center img-profile">
+              <img
+                [src]="employee?.employeeProfile.includes('null') ? mainService.defaultImageProfile : employee?.employeeProfile"
+                class="avatar-profile" alt="">
+            </ion-avatar>
+            <ion-label *ngIf="!isSkeletonLoading" class="text-large-white"
+              style="margin-top: 15px;">{{employee?.name}}</ion-label>
+            <ion-label *ngIf="!isSkeletonLoading" class="text-medium-white">{{employee?.employeeNo}}</ion-label>
+            <ion-label *ngIf="!isSkeletonLoading"
+              class="text-medium-white ion-text-center">{{employee?.positionName}}</ion-label>
+            <ion-skeleton-text *ngIf="isSkeletonLoading" animated
+              style="width: 100px;height: 10px;"></ion-skeleton-text>
+            <ion-skeleton-text *ngIf="isSkeletonLoading" animated
+              style="width: 100px;height: 10px;"></ion-skeleton-text>
+            <ion-skeleton-text *ngIf="isSkeletonLoading" animated
+              style="width: 100px;height: 10px;"></ion-skeleton-text>
+          </div>
+        </div>
+        <form (ngSubmit)="onSubmit()" class="form" #loanform="ngForm" [ngClass]="isAdmin ? 'form-admin' : ''">
+          <div class="">
+            <ion-row class="row-loan-page">
+              <div class="page-loan">
+                <div class="circle-loan-page-active">
+                  <ion-text>1</ion-text>
+                </div>
+                <ion-label class="text-medium">Type</ion-label>
+              </div>
+              <div class="page-loan">
+                <hr style="width: 50px;" [ngClass]="page == 2 || page == 3 ? 'bb-blue' : 'bb-grey'">
+              </div>
+              <div class="page-loan">
+                <div [ngClass]="page == 2 || page == 3 ? 'circle-loan-page-active' : 'circle-loan-page'">
+                  <ion-text>2</ion-text>
+                </div>
+                <ion-label class="text-medium">Calculation</ion-label>
+              </div>
+              <div class="page-loan">
+                <hr style="width: 50px;" [ngClass]="page == 3 ? 'bb-blue' : 'bb-grey'">
+              </div>
+              <div class="page-loan">
+                <div [ngClass]="page == 3 ? 'circle-loan-page-active' : 'circle-loan-page'">
+                  <ion-text>3</ion-text>
+                </div>
+                <ion-label class="text-medium">Attachment</ion-label>
+              </div>
+            </ion-row>
+
+            <ion-list *ngIf="page == 1">
+              <ion-row class="label-group">
+                <ion-label class="text-medium-red">*Required Field</ion-label>
+              </ion-row>
+
+              <ion-row style="margin-top: 10px;">
+                <p-floatLabel class="hceazy-select">
+                  <p-dropdown [options]="categories" ngModel [(ngModel)]="category" name="category" optionLabel="name"
+                    inputId="float-label" (onChange)="changeSelect('Category')">
+                    <ng-template pTemplate="dropdownicon">
+                      <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                    </ng-template>
+                  </p-dropdown>
+                  <label for="float-label">Loan Category<ion-text color="danger">*</ion-text></label>
+                </p-floatLabel>
+              </ion-row>
+
+              <ion-row style="margin-top: 20px;">
+                <p-floatLabel class="hceazy-select">
+                  <p-dropdown [options]="loanTypes" ngModel [(ngModel)]="loanType" name="loanType" optionLabel="name"
+                    inputId="float-label" (onChange)="changeSelect('Loan Type')" [disabled]="loanCategoryId == null">
+                    <ng-template pTemplate="dropdownicon">
+                      <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                    </ng-template>
+                  </p-dropdown>
+                  <label for="float-label">Loan Type<ion-text color="danger">*</ion-text></label>
+                </p-floatLabel>
+              </ion-row>
+
+              <ion-row style="margin-top: 20px;" *ngIf="isVehicle">
+                <p-floatLabel class="hceazy-select">
+                  <p-dropdown [options]="vehicleType" ngModel [(ngModel)]="vehicleTypeId" name="vehicleTypeId"
+                    optionLabel="name" optionValue="id" inputId="float-label" (onChange)="changeSelect('Vehicle Type')"
+                    [required]="true">
+                    <ng-template pTemplate="dropdownicon">
+                      <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                    </ng-template>
+                  </p-dropdown>
+                  <label for="float-label">Vehicle Type<ion-text color="danger">*</ion-text></label>
+                </p-floatLabel>
+              </ion-row>
+
+              <!-- <ion-row style="margin-top: 20px;" *ngIf="isVehicle">
+                <p-floatLabel class="hceazy-select">
+                  <p-dropdown [options]="brandType" ngModel [(ngModel)]="brandTypeId" name="brandTypeId"
+                    optionLabel="name" optionValue="id" inputId="float-label" [disabled]="vehicleTypeId == null">
+                    <ng-template pTemplate="dropdownicon">
+                      <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                    </ng-template>
+                  </p-dropdown>
+                  <label for="float-label">Vehicle Brand</label>
+                </p-floatLabel>
+              </ion-row> -->
+
+              <ion-row style="margin-top: 20px;" *ngIf="isVehicle">
+                <div class="hceazy-input-wrapper">
+                  <input autocomplete="off" class="hceazy-input" type="text" placeholder="Vehicle Brand"
+                    name="brandTypeName" ngModel [(ngModel)]="brandTypeName" readonly="true"
+                    (click)="openSearchMenu('Vehicle Brand')" required />
+                  <label class="hceazy-label" for="brandTypeName">
+                    Vehicle Brand<ion-text color="danger">*</ion-text>
+                  </label>
+                  <ion-icon slot="icon-only" name="search-outline" class="hceazy-icon-search"></ion-icon>
+                </div>
+              </ion-row>
+
+              <div *ngIf="!isEmpty">
+                <div *ngIf="!isMap">
+                  <ion-row style="margin-top: 20px;" class="label-group">
+                    <ion-label class="text-medium-blue">Batas Bawah</ion-label>
+                  </ion-row>
+    
+                  <ion-row class="label-group" style="margin-top: 10px;">
+                    <ion-label class="text-medium">
+                      {{loanRequirements.minimalLoanUsed | currency:'Rp. ':'symbol':'1.2-2'}}
+                    </ion-label>
+                  </ion-row>
+                </div>
+                <ion-row class="label-group">
+                  <ion-label class="text-medium-blue">Batas Atas</ion-label>
+                </ion-row>
+  
+                <ion-row class="label-group" style="margin-top: 10px;">
+                  <ion-label class="text-medium">
+                    {{loanRequirements.maximunLoanUsed | currency:'Rp. ':'symbol':'1.2-2'}}
+                  </ion-label>
+                </ion-row>
+                <div *ngIf="isCap">
+                  <ion-row class="label-group">
+                    <ion-label class="text-medium-blue">Grade</ion-label>
+                  </ion-row>
+    
+                  <ion-row class="label-group" style="margin-top: 10px;">
+                    <ion-label class="text-medium">
+                      {{loanRequirements.grade}}
+                    </ion-label>
+                  </ion-row>
+                </div>
+                <ion-row class="label-group">
+                  <ion-label class="text-medium-blue">Final Score Tahun Lalu</ion-label>
+                </ion-row>
+  
+                <ion-row class="label-group" style="margin-top: 10px;">
+                  <ion-label class="text-medium">
+                    {{loanRequirements.ratingLastYear}}
+                  </ion-label>
+                </ion-row>
+                <div *ngIf="!isMap">
+                  <ion-row class="label-group">
+                    <ion-label class="text-medium-blue">Final Score 2 Tahun Lalu</ion-label>
+                  </ion-row>
+    
+                  <ion-row class="label-group" style="margin-top: 10px;">
+                    <ion-label class="text-medium">
+                      {{loanRequirements.ratingLast2Year}}
+                    </ion-label>
+                  </ion-row>
+                </div>
+              </div>
+              <ion-row class="label-group" style="margin-top: 20px;">
+                <ion-label class="text-small1-grey">Detail</ion-label>
+              </ion-row>
+
+              <ion-row style="margin-top: 10px;">
+                <div class="hceazy-input-wrapper">
+                  <input autocomplete="off" class="hceazy-input" type="text" placeholder="Loan Date" id="loanDate"
+                    name="loanDate" readonly="true" value="{{ loanDate | date: 'd-MMM-y'}}" required="true" />
+                  <label class="hceazy-label" for="loanDate">
+                    Loan Date<ion-text color="danger">*</ion-text>
+                  </label>
+                </div>
+
+                <ion-modal id="input-date" trigger="loanDate" mode="ios">
+                  <ng-template>
+                    <ion-content scrollY="false" scrollX="false">
+                      <ion-row>
+                        <ion-col>
+                          <ion-datetime (ionChange)="onChangeDate()" max="2050"
+                            style="min-width: 100%; max-height: 350px; border-radius: 10px;" mode="ios" doneText="Set"
+                            cancelText="Cancel" showDefaultButtons="true" required ngModel [(ngModel)]="loanDate"
+                            name="loanDate" presentation="date">
+                          </ion-datetime>
+                        </ion-col>
+                      </ion-row>
+                    </ion-content>
+                  </ng-template>
+                </ion-modal>
+              </ion-row>
+
+              <ion-row style="margin-top: 20px;">
+                <div class="hceazy-input-wrapper">
+                  <input autocomplete="off" class="hceazy-input" type="tel" placeholder="Loan Amount" id="amount"
+                    name="amount" ngModel [(ngModel)]="amount" required="true" (input)="changeAmount($event)" />
+                  <label class="hceazy-label" for="amount">
+                    Loan Amount (Rupiah)<ion-text color="danger">*</ion-text>
+                  </label>
+                </div>
+              </ion-row>
+
+              <ion-row style="margin-top: 20px;">
+                <div class="hceazy-input-wrapper">
+                  <input autocomplete="off" class="hceazy-input" type="tel" placeholder="Tenor" id="tenor" name="tenor"
+                    ngModel [(ngModel)]="tenor" required="true" (blur)="changeTenor($event)" [readOnly]="minTenor === maxTenor && minTenor > 0" 
+                    [class.disabled-input]="minTenor === maxTenor && minTenor > 0" />
+                  <label class="hceazy-label" for="tenor">
+                    Tenor (month)<ion-text color="danger">*</ion-text>
+                  </label>
+                </div>
+                <ion-label *ngIf="minTenor && maxTenor" class="text-small1-red" style="margin-top: 5px;">
+                  *Minimum Tenor: {{ minTenor }} & Maximum Tenor: {{ maxTenor }}
+                </ion-label>
+              </ion-row>
+
+              <ion-row style="margin-top: 20px;">
+                <div class="hceazy-input-wrapper">
+                  <input autocomplete="off" class="hceazy-input" type="tel" placeholder="Down Payment" id="downPayment"
+                    name="downPayment" ngModel [(ngModel)]="downPayment" [required]="isDP"
+                    (input)="changeAmount($event)" />
+                  <label class="hceazy-label" for="downPayment">
+                    Down Payment (rupiah)<ion-text color="danger">{{ isDP ? '*' : '' }}</ion-text>
+                  </label>
+                </div>
+              </ion-row>
+
+              <ion-row style="margin-top: 20px;">
+                <div class="hceazy-input-wrapper">
+                  <textarea id="remark" name="remark" class="hceazy-textarea" placeholder="Remark" ngModel
+                    [(ngModel)]="remark" required="true">
+                  </textarea>
+                  <label class="hceazy-label" for="remark">
+                    Remark<ion-text color="danger">*</ion-text>
+                  </label>
+                </div>
+              </ion-row>
+            </ion-list>
+
+            <ion-list *ngIf="page == 2">
+              <ion-row class="label-group">
+                <ion-label class="text-medium-blue">Loan Amount (Rupiah)</ion-label>
+              </ion-row>
+
+              <ion-row class="label-group" style="margin-top: 10px;">
+                <ion-label class="text-medium">
+                  {{loanAmount | currency:'Rp. ':'symbol':'1.2-2'}}
+                </ion-label>
+              </ion-row>
+
+              <ion-row class="label-group" style="margin-top: 10px;">
+                <ion-label class="text-medium-blue">Tenor (month)</ion-label>
+              </ion-row>
+
+              <ion-row class="label-group" style="margin-top: 10px;">
+                <ion-label class="text-medium">{{tenor }}</ion-label>
+              </ion-row>
+
+              <ion-row class="label-group" style="margin-top: 10px;">
+                <ion-label class="text-medium-blue">Interest Rate (%)</ion-label>
+              </ion-row>
+
+              <ion-row class="label-group" style="margin-top: 10px;">
+                <ion-label class="text-medium">{{interestRate }}</ion-label>
+              </ion-row>
+
+              <ion-row class="label-group" style="margin-top: 10px;">
+                <ion-label class="text-medium-blue">Montly Installment (Rupiah)</ion-label>
+              </ion-row>
+
+              <ion-row class="label-group" style="margin-top: 10px;">
+                <ion-label class="text-medium">
+                  {{monthlyInstallment | currency:'Rp. ':'symbol':'1.2-2'}}
+                </ion-label>
+              </ion-row>
+            </ion-list>
+
+            <ion-list *ngIf="page == 3">
+              <ion-row class="label-group">
+                <ion-label class="text-medium-red">*Required Field</ion-label>
+              </ion-row>
+
+              <div class="list-attachment" *ngFor="let p of attachmentList; let i = index;">
+                <ion-row class="label-group" style="margin-top: 20px; justify-content: space-between;">
+                  <ion-label class="text-medium-blue">{{p.name}}
+                    <ion-text color="danger">(Max file size 5 MB){{p.mandatory ? '*' : ''}}</ion-text>
+                  </ion-label>
+                </ion-row>
+
+                <ion-row class="file-upload-row">
+                  <ion-row>
+                    <p-fileUpload class="upload-file" *ngIf="mainService.platformName == 'web'" #fileUpload
+                      chooseIcon="none" name="dataFile" [accept]="acceptType" chooseLabel="Choose File"
+                      (onSelect)="uploadFile($event,i)">
+                    </p-fileUpload>
+                  </ion-row>
+                  <ion-button *ngIf="mainService.platformName != 'web'" class="upload-file-button"
+                    (click)="uploadFile(null,i)">
+                    <span>Choose File</span>
+                  </ion-button>
+                  <ion-label class="file-label">{{p.fileName}}</ion-label>
+                </ion-row>
+              </div>
+
+            </ion-list>
+          </div>
+          <ion-row>
+            <ion-col size="6" *ngIf="page != 1">
+              <ion-button class="blue-button" fill="outline" color="primary" [disabled]="!loanform.valid"
+                (click)="loadPrevLoan()">
+                <ion-label class="btn-prev">Previous</ion-label>
+              </ion-button>
+            </ion-col>
+            <ion-col [size]="page == 1 ? '12' : '6'" *ngIf="page != 3">
+              <ion-button class="blue-button" color="primary" [disabled]="!loanform.valid" (click)="loadNextLoan()">
+                Next
+              </ion-button>
+            </ion-col>
+            <ion-col size="6" *ngIf="page == 3">
+              <ion-button class="blue-button" color="primary" [disabled]="!loanform.valid || verificationForm()"
+                type="submit">
+                Submit
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </form>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-content>

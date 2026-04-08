@@ -1,0 +1,568 @@
+<ion-header>
+  <ion-toolbar style="z-index: 0;">
+    <ion-button slot="end" fill="clear" (click)="close()">
+      <ion-icon name="close-outline"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-light-grey">
+  <ion-row style="height: 100%;">
+    <ion-col class="ion-no-padding">
+      <div class="content" style="height: 100%;">
+        <form (ngSubmit)="onSubmit()" class="form" #loanform="ngForm">
+          <ion-list *ngIf="type == 'Vehicle Brand'">
+            <ion-row class="label-group">
+              <ion-label class="text-medium-blue">New {{type}}</ion-label>
+            </ion-row>
+
+            <ion-row style="margin-top: 10px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Name" name="name" ngModel
+                  [(ngModel)]="dataDetail.name" required="true" />
+                <label class="hceazy-label" for="name">
+                  Name<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <textarea id="description" name="description" class="hceazy-textarea" placeholder="Description" ngModel
+                  [(ngModel)]="dataDetail.description" maxlength="500">
+                </textarea>
+                <label class="hceazy-label" for="description">
+                  Description
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <p-floatLabel class="hceazy-select">
+                <p-dropdown [options]="listVehicleType" ngModel [(ngModel)]="dataDetail.vehicleTypeId"
+                  name="perspective" optionLabel="name" optionValue="id" inputId="float-label">
+                  <ng-template pTemplate="dropdownicon">
+                    <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                  </ng-template>
+                </p-dropdown>
+                <label for="float-label">Vehicle Type</label>
+              </p-floatLabel>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <p-floatLabel class="hceazy-select">
+                <p-dropdown [options]="listEngineType" ngModel [(ngModel)]="dataDetail.engineType" name="engineType"
+                  optionLabel="title" optionValue="value" inputId="float-label">
+                  <ng-template pTemplate="dropdownicon">
+                    <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                  </ng-template>
+                </p-dropdown>
+                <label for="float-label">Engine Type</label>
+              </p-floatLabel>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="tel" placeholder="Company Percentage (%)"
+                  id="companyPercentage" name="companyPercentage" ngModel [(ngModel)]="dataDetail.companyPercentage"
+                  (input)="checkMaxValue($event)" />
+                <label class="hceazy-label" for="companyPercentage">
+                  Company Percentage (%)
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="tel" placeholder="Employee Percentage (%)"
+                  id="employeePercentage" name="employeePercentage" ngModel [(ngModel)]="dataDetail.employeePercentage"
+                  maxlength="4" (input)="checkMaxValue($event)" />
+                <label class="hceazy-label" for="employeePercentage">
+                  Employee Percentage (%)
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row *ngIf="maxCalcPercentage">
+              <label class="text-medium-red">
+                Percentage cannot be higher than 100%
+              </label>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Start Date" id="startDate"
+                  name="startDate" readonly="true" value="{{ dataDetail.startDate | date: 'dd-MMM-yyyy'}}" required />
+                <label class="hceazy-label" for="startDate">
+                  Start Date<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+
+              <ion-modal id="input-date" trigger="startDate" mode="ios">
+                <ng-template>
+                  <ion-content scrollY="false" scrollX="false">
+                    <ion-row>
+                      <ion-col>
+                        <ion-datetime (ionChange)="onChangeDate('start')"
+                        max="2050" style="min-width: 100%; max-height: 350px; border-radius: 10px;"
+                          mode="ios" doneText="Set" cancelText="Cancel" showDefaultButtons="true" required ngModel
+                          [(ngModel)]="dataDetail.startDate" name="startDate" presentation="date" hourCycle="h24">
+                        </ion-datetime>
+                      </ion-col>
+                    </ion-row>
+                  </ion-content>
+                </ng-template>
+              </ion-modal>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="End Date" id="endDate"
+                  name="endDate" readonly="true" value="{{ dataDetail.endDate | date: 'dd-MMM-yyyy'}}" required />
+                <label class="hceazy-label" for="endDate">
+                  End Date<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+
+              <ion-modal id="input-date" trigger="endDate" mode="ios">
+                <ng-template>
+                  <ion-content scrollY="false" scrollX="false">
+                    <ion-row>
+                      <ion-col>
+                        <ion-datetime (ionChange)="onChangeDate('end')"
+                        max="2050" style="min-width: 100%; max-height: 350px; border-radius: 10px;"
+                          mode="ios" doneText="Set" cancelText="Cancel" showDefaultButtons="true" required ngModel
+                          [(ngModel)]="dataDetail.endDate" name="endDate" presentation="date" hourCycle="h24">
+                        </ion-datetime>
+                      </ion-col>
+                    </ion-row>
+                  </ion-content>
+                </ng-template>
+              </ion-modal>
+            </ion-row>
+          </ion-list>
+
+          <ion-list *ngIf="type == 'Plafond Bracket' || type == 'Allowance Bracket'">
+            <ion-row class="label-group">
+              <ion-label class="text-medium-blue">New {{type}}</ion-label>
+            </ion-row>
+
+            <ion-row style="margin-top: 10px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Name" name="name" ngModel
+                  [(ngModel)]="dataDetail.name" required="true" />
+                <label class="hceazy-label" for="name">
+                  Name<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <textarea id="description" name="description" class="hceazy-textarea" placeholder="Description" ngModel
+                  [(ngModel)]="dataDetail.description" maxlength="500">
+                </textarea>
+                <label class="hceazy-label" for="description">
+                  Description
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Organization Group"
+                  name="organizationName" ngModel [(ngModel)]="dataDetail.organizationName" readonly="true"
+                  (click)="openSearchMenu('Organization')" />
+                <label class="hceazy-label" for="organizationName">
+                  Organization
+                </label>
+                <ion-icon slot="icon-only" name="search-outline" class="hceazy-icon-search"></ion-icon>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Organization Group"
+                  name="orgGroup" ngModel [(ngModel)]="dataDetail.orgGroup" readonly="true"
+                  (click)="openSearchMenu('Organization Group')" />
+                <label class="hceazy-label" for="orgGroup">
+                  Organization Group
+                </label>
+                <ion-icon slot="icon-only" name="search-outline" class="hceazy-icon-search"></ion-icon>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Position" name="positionName"
+                  ngModel [(ngModel)]="dataDetail.positionName" readonly="true"
+                  (click)="openSearchMenu('Position Job')" />
+                <label class="hceazy-label" for="positionName">
+                  Position
+                </label>
+                <ion-icon slot="icon-only" name="search-outline" class="hceazy-icon-search"></ion-icon>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Position Level"
+                  name="positionLevelName" ngModel [(ngModel)]="dataDetail.positionLevelName" readonly="true"
+                  (click)="openSearchMenu('Position Level')" />
+                <label class="hceazy-label" for="positionLevelName">
+                  Position Level
+                </label>
+                <ion-icon slot="icon-only" name="search-outline" class="hceazy-icon-search"></ion-icon>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Job Title" name="jobTitleName"
+                  ngModel [(ngModel)]="dataDetail.jobTitleName" readonly="true" (click)="openSearchMenu('Job Title')" />
+                <label class="hceazy-label" for="jobTitleName">
+                  Job Title
+                </label>
+                <ion-icon slot="icon-only" name="search-outline" class="hceazy-icon-search"></ion-icon>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Job Family" name="jobFamilyName"
+                  ngModel [(ngModel)]="dataDetail.jobFamilyName" readonly="true"
+                  (click)="openSearchMenu('Job Family')" />
+                <label class="hceazy-label" for="jobFamilyName">
+                  Job Family
+                </label>
+                <ion-icon slot="icon-only" name="search-outline" class="hceazy-icon-search"></ion-icon>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <p-floatLabel class="hceazy-select">
+                <p-dropdown [options]="listWorkLocationType" ngModel [(ngModel)]="dataDetail.workLocationType"
+                  name="workLocationType" optionLabel="title" optionValue="value" inputId="float-label">
+                  <ng-template pTemplate="dropdownicon">
+                    <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                  </ng-template>
+                </p-dropdown>
+                <label for="float-label">Work Location Type</label>
+              </p-floatLabel>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Company Office"
+                  name="companyOfficeName" ngModel [(ngModel)]="dataDetail.companyOfficeName" readonly="true"
+                  (click)="openSearchMenu('Work Location')" />
+                <label class="hceazy-label" for="companyOfficeName">
+                  Company Office
+                </label>
+                <ion-icon slot="icon-only" name="search-outline" class="hceazy-icon-search"></ion-icon>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Grade" name="gradeName" ngModel
+                  [(ngModel)]="dataDetail.gradeName" readonly="true" (click)="openSearchMenu('Grade')" />
+                <label class="hceazy-label" for="gradeName">
+                  Grade
+                </label>
+                <ion-icon slot="icon-only" name="search-outline" class="hceazy-icon-search"></ion-icon>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <p-floatLabel class="hceazy-select">
+                <p-dropdown [options]="listEmploymentStatus" ngModel [(ngModel)]="dataDetail.employmentStatus"
+                  name="employmentStatus" optionLabel="title" optionValue="value" inputId="float-label">
+                  <ng-template pTemplate="dropdownicon">
+                    <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                  </ng-template>
+                </p-dropdown>
+                <label for="float-label">Employment Status</label>
+              </p-floatLabel>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <p-floatLabel class="hceazy-select">
+                <p-dropdown [options]="listRatingModel" ngModel [(ngModel)]="dataDetail.ratingId" name="ratingId"
+                  optionLabel="name" optionValue="id" inputId="float-label">
+                  <ng-template pTemplate="dropdownicon">
+                    <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                  </ng-template>
+                </p-dropdown>
+                <label for="float-label">Rating Model</label>
+              </p-floatLabel>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <p-floatLabel class="hceazy-select">
+                <p-dropdown [options]="listElementName" ngModel [(ngModel)]="dataDetail.elementName" name="elementName"
+                  optionLabel="elementName" optionValue="elementName" inputId="float-label" [required]="(dataDetail.minValue == '' || dataDetail.minValue == undefined) &&
+                                  (dataDetail.maxValue == '' || dataDetail.maxValue == undefined)" [disabled]="(dataDetail.minValue != '' && dataDetail.minValue != undefined) ||
+                                  (dataDetail.maxValue != '' && dataDetail.maxValue != undefined)">
+                  <ng-template pTemplate="dropdownicon">
+                    <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                  </ng-template>
+                </p-dropdown>
+                <label for="float-label">Element Name</label>
+              </p-floatLabel>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;" *ngIf="type == 'Plafond Bracket'">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="tel" placeholder="Minimum Value (rupiah)"
+                  id="minValue" name="minValue" ngModel [(ngModel)]="dataDetail.minValue" (input)="changeValue($event)"
+                  [required]="(dataDetail.elementNameId == '' || dataDetail.elementNameId == undefined) &&
+                                    (dataDetail.multiplier == '' || dataDetail.multiplier == undefined)" [disabled]="(dataDetail.elementNameId != '' && dataDetail.elementNameId != undefined) ||
+                                    (dataDetail.multiplier != '' && dataDetail.multiplier != undefined)" />
+                <label class="hceazy-label" for="minValue">
+                  Minimum Value (rupiah)
+                  <ion-text color="danger" *ngIf="(dataDetail.elementNameId == '' || dataDetail.elementNameId == undefined) &&
+                                    (dataDetail.multiplier == '' || dataDetail.multiplier == undefined)">*</ion-text>
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;" *ngIf="type == 'Plafond Bracket'">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="tel" placeholder="Maximum Value (rupiah)"
+                  id="maxValue" name="maxValue" ngModel [(ngModel)]="dataDetail.maxValue" (input)="changeValue($event)"
+                  [required]="(dataDetail.elementNameId == '' || dataDetail.elementNameId == undefined || dataDetail.elementNameId == null) &&
+                                    (dataDetail.multiplier == '' || dataDetail.multiplier == undefined || dataDetail.multiplier == null)"
+                  [disabled]="(dataDetail.elementNameId != '' && dataDetail.elementNameId != undefined) ||
+                                    (dataDetail.multiplier != '' && dataDetail.multiplier != undefined)" />
+                <label class="hceazy-label" for="maxValue">
+                  Maximum Value (rupiah)
+                  <ion-text color="danger"
+                    *ngIf="(dataDetail.elementNameId == '' || dataDetail.elementNameId == undefined || dataDetail.elementNameId == null) &&
+                                    (dataDetail.multiplier == '' || dataDetail.multiplier == undefined || dataDetail.multiplier == null)">*</ion-text>
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;" *ngIf="type == 'Allowance Bracket'">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="tel" placeholder="Value" id="maxValue"
+                  name="maxValue" ngModel [(ngModel)]="dataDetail.maxValue" (input)="changeValue($event)"
+                  [required]="(dataDetail.elementNameId == '' || dataDetail.elementNameId == undefined || dataDetail.elementNameId == null) &&
+                                    (dataDetail.multiplier == '' || dataDetail.multiplier == undefined || dataDetail.multiplier == null)" [disabled]="(dataDetail.elementNameId != '' && dataDetail.elementNameId != undefined) ||
+                                    (dataDetail.multiplier != '' && dataDetail.multiplier != undefined)" />
+                <label class="hceazy-label" for="maxValue">
+                  Value<ion-text color="danger" *ngIf="(dataDetail.minValue == '' || dataDetail.minValue == undefined) &&
+                                   (dataDetail.maxValue == '' || dataDetail.maxValue == undefined)">
+                    *</ion-text>
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="tel" placeholder="Multiplier (x)" id="multiplier"
+                  name="multiplier" ngModel [(ngModel)]="dataDetail.multiplier" (input)="changeValue($event)"
+                  [required]="(dataDetail.minValue == '' || dataDetail.minValue == undefined) &&
+                                   (dataDetail.maxValue == '' || dataDetail.maxValue == undefined)" [disabled]="(dataDetail.minValue != '' && dataDetail.minValue != undefined) ||
+                                   (dataDetail.maxValue != '' && dataDetail.maxValue != undefined)" />
+                <label class="hceazy-label" for="multiplier">
+                  Multiplier (x)<ion-text color="danger" *ngIf="(dataDetail.minValue == '' || dataDetail.minValue == undefined) &&
+                                   (dataDetail.maxValue == '' || dataDetail.maxValue == undefined)">
+                    *</ion-text>
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;" *ngIf="type == 'Allowance Bracket'">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Sync Element Name"
+                  name="syncElementName" ngModel [(ngModel)]="dataDetail.syncElementName" required="true" />
+                <label class="hceazy-label" for="syncElementName">
+                  Sync Element Name
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Start Date" id="startDate"
+                  name="startDate" readonly="true" value="{{ dataDetail.startDate | date: 'dd-MMM-yyyy'}}" required />
+                <label class="hceazy-label" for="startDate">
+                  Start Date<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+
+              <ion-modal id="input-date" trigger="startDate" mode="ios">
+                <ng-template>
+                  <ion-content scrollY="false" scrollX="false">
+                    <ion-row>
+                      <ion-col>
+                        <ion-datetime (ionChange)="onChangeDate('start')"
+                        max="2050" style="min-width: 100%; max-height: 350px; border-radius: 10px;"
+                          mode="ios" doneText="Set" cancelText="Cancel" showDefaultButtons="true" required ngModel
+                          [(ngModel)]="dataDetail.startDate" name="startDate" presentation="date" hourCycle="h24">
+                        </ion-datetime>
+                      </ion-col>
+                    </ion-row>
+                  </ion-content>
+                </ng-template>
+              </ion-modal>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="End Date" id="endDate"
+                  name="endDate" readonly="true" value="{{ dataDetail.endDate | date: 'dd-MMM-yyyy'}}" required />
+                <label class="hceazy-label" for="endDate">
+                  End Date<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+
+              <ion-modal id="input-date" trigger="endDate" mode="ios">
+                <ng-template>
+                  <ion-content scrollY="false" scrollX="false">
+                    <ion-row>
+                      <ion-col>
+                        <ion-datetime (ionChange)="onChangeDate('end')"
+                        max="2050" style="min-width: 100%; max-height: 350px; border-radius: 10px;"
+                          mode="ios" doneText="Set" cancelText="Cancel" showDefaultButtons="true" required ngModel
+                          [(ngModel)]="dataDetail.endDate" name="endDate" presentation="date" hourCycle="h24">
+                        </ion-datetime>
+                      </ion-col>
+                    </ion-row>
+                  </ion-content>
+                </ng-template>
+              </ion-modal>
+            </ion-row>
+          </ion-list>
+
+          <ion-list *ngIf="type == 'Feedback Fleet'">
+            <ion-row class="label-group">
+              <ion-label class="text-medium-blue">New {{type}}</ion-label>
+            </ion-row>
+
+            <ion-row style="margin-top: 10px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Name" name="name" ngModel
+                  [(ngModel)]="dataDetail.name" required="true" />
+                <label class="hceazy-label" for="name">
+                  Name<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <textarea id="description" name="description" class="hceazy-textarea" placeholder="Description" ngModel
+                  [(ngModel)]="dataDetail.description" maxlength="500">
+                </textarea>
+                <label class="hceazy-label" for="description">
+                  Description
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Sync Element Name"
+                  name="syncElementName" ngModel [(ngModel)]="dataDetail.syncElementName" required="true" />
+                <label class="hceazy-label" for="syncElementName">
+                  Sync Element Name
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="tel" placeholder="Company Percentage (%)"
+                  id="sequenceNo" name="sequenceNo" ngModel [(ngModel)]="dataDetail.sequenceNo" (input)="change($event)"
+                  required />
+                <label class="hceazy-label" for="sequenceNo">
+                  Sequence No<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <p-floatLabel class="hceazy-select">
+                <p-dropdown [options]="listValueSource" ngModel [(ngModel)]="dataDetail.valueSource" name="valueSource"
+                  optionLabel="title" optionValue="value" inputId="float-label">
+                  <ng-template pTemplate="dropdownicon">
+                    <ion-icon name="caret-down-outline" style="color: black;"></ion-icon>
+                  </ng-template>
+                </p-dropdown>
+                <label for="float-label">Value Source</label>
+              </p-floatLabel>
+            </ion-row>
+
+            <ion-row style="margin-top: 10px;">
+              <ion-item id="toggle" lines="none" style="width: 100%;">
+                <ion-label class="text-medium-blue">Active</ion-label>
+                <ion-toggle slot="end" mode="ios" (ionChange)="toggleChange($event)"
+                  [checked]="dataDetail.active"></ion-toggle>
+              </ion-item>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Start Date" id="startDate"
+                  name="startDate" readonly="true" value="{{ dataDetail.startDate | date: 'dd-MMM-yyyy'}}" required />
+                <label class="hceazy-label" for="startDate">
+                  Start Date<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+
+              <ion-modal id="input-date" trigger="startDate" mode="ios">
+                <ng-template>
+                  <ion-content scrollY="false" scrollX="false">
+                    <ion-row>
+                      <ion-col>
+                        <ion-datetime (ionChange)="onChangeDate('start')"
+                        max="2050" style="min-width: 100%; max-height: 350px; border-radius: 10px;"
+                          mode="ios" doneText="Set" cancelText="Cancel" showDefaultButtons="true" required ngModel
+                          [(ngModel)]="dataDetail.startDate" name="startDate" presentation="date" hourCycle="h24">
+                        </ion-datetime>
+                      </ion-col>
+                    </ion-row>
+                  </ion-content>
+                </ng-template>
+              </ion-modal>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="End Date" id="endDate"
+                  name="endDate" readonly="true" value="{{ dataDetail.endDate | date: 'dd-MMM-yyyy'}}" required />
+                <label class="hceazy-label" for="endDate">
+                  End Date<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+
+              <ion-modal id="input-date" trigger="endDate" mode="ios">
+                <ng-template>
+                  <ion-content scrollY="false" scrollX="false">
+                    <ion-row>
+                      <ion-col>
+                        <ion-datetime (ionChange)="onChangeDate('end')"
+                        max="2050" style="min-width: 100%; max-height: 350px; border-radius: 10px;"
+                          mode="ios" doneText="Set" cancelText="Cancel" showDefaultButtons="true" required ngModel
+                          [(ngModel)]="dataDetail.endDate" name="endDate" presentation="date" hourCycle="h24">
+                        </ion-datetime>
+                      </ion-col>
+                    </ion-row>
+                  </ion-content>
+                </ng-template>
+              </ion-modal>
+            </ion-row>
+          </ion-list>
+
+          <ion-button class="blue-button" style="margin-top: 30px;" color="primary"
+            [disabled]="!loanform.valid || dataDetail.startDate == null || dataDetail.endDate == null" type="submit">
+            Submit
+          </ion-button>
+        </form>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-content>

@@ -1,0 +1,126 @@
+<ion-header>
+  <ion-toolbar style="z-index: 0;">
+    <ion-button slot="start" (click)="mainService.navBack()" fill="clear" mode="md" icon="arrow-back-outline"
+      style="margin-left: 8px;">
+      <ion-icon name="arrow-back-outline" style="color: #0C1E2E; font-size: 24px;"></ion-icon>
+    </ion-button>
+    <ion-title mode="ios" class="ion-text-center text-large-blue">
+      Transfer Evidence Detail
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-light-grey">
+  <ion-refresher [disabled]="canRefresh" slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-row>
+    <ion-col class="ion-no-padding">
+      <div style="height: 100%; padding: 20px 0px;">
+        <div class="card-transfer">
+          <ion-row style="margin-top: 20px;" *ngIf="isSkeletonLoading">
+            <ion-col size="12" *ngFor="let p of [].constructor(20)">
+              <ion-skeleton-text style="width: 100%; border-radius: 10px; height: 100px;"></ion-skeleton-text>
+            </ion-col>
+          </ion-row>
+
+          <ion-row style="margin-top: 20px;" *ngIf="!isSkeletonLoading">
+            <ion-col size="12" class="ion-no-padding">
+              <ion-label class="text-small1-grey">Request Information</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-blue">Request Number</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-blue">Request Date</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-bold">{{transfer?.requestNo ?? '-'}}</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-bold">{{transfer?.requestDate | date:'dd MMM yyyy HH:mm'}}</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-blue">Go Live Date</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-blue">Transfer Date</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-bold">{{transfer?.requestDate | date:'dd MMMM yyyy'}}</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-bold">{{transfer?.transferDate | date: 'dd MMMM yyyy'}}</ion-label>
+            </ion-col>
+
+            <ion-col size="12" class="ion-no-padding" style="margin-top: 20px;">
+              <ion-label class="text-small1-grey">Loan Information</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-blue">Loan Category</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-blue">Loan Type</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-bold">{{transfer?.categoryName ?? '-'}}</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-bold">{{transfer?.loanTypeName ?? '-'}}</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-blue">Loan Amount</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-blue">Down Payment</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-bold">{{transfer?.amount | number}}</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-bold">{{transfer?.downPayment | number}}</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-blue">Monthly Installment</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+              <ion-label class="text-small1-bold">{{transfer?.monthlyInstallment | number}}</ion-label>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding">
+            </ion-col>
+
+            <ion-col size="12" class="ion-no-padding" style="margin-top: 20px;">
+              <ion-label class="text-small1-grey">Additional Information</ion-label>
+            </ion-col>
+            <ion-col size="12" class="ion-no-padding">
+              <ion-label class="text-small1-grey">Remarks</ion-label>
+            </ion-col>
+            <ion-col size="12" class="ion-no-padding">
+              <ion-label class="text-small1-bold">{{transfer.remarks ?? '-'}}</ion-label>
+            </ion-col>
+            <div *ngIf="transfer?.attachmentDetails?.length > 0" style="width: 100%;">
+              <ion-col size="12" class="ion-no-padding" style="margin-top: 20px;">
+                <ion-label class="text-small1-blue">Supporting Document</ion-label>
+              </ion-col>
+              <ion-col size="12" class="ion-no-padding" *ngFor="let p of transfer.attachmentDetails">
+                <ion-label class="text-small1-blue">{{p.loanAttachmentName}}</ion-label>
+                <ion-button color="secondary" class="ion-text-capitalize text-small1-white edit-btn"
+                  style="width: 100%; height: 50px; margin-bottom: 10px;" (click)="downloadDocs(p.path)">
+                  <ion-icon src="../../../../assets/icon/self-service/download.svg" class="icon-download"></ion-icon>
+                  <ion-label class="text-small1-white">Download</ion-label>
+                </ion-button>
+              </ion-col>
+            </div>
+          </ion-row>
+        </div>
+        <div class="btn-upload-envidence">
+          <ion-button class="blue-button" color="primary" (click)="uploadEnvidence()">
+            Upload Transfer Evidence
+          </ion-button>
+        </div>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-content>

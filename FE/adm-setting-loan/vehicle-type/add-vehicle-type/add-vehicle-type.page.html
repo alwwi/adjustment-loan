@@ -1,0 +1,109 @@
+<ion-header>
+  <ion-toolbar style="z-index: 0;">
+    <ion-button slot="start" (click)="mainService.navBack()" fill="clear" mode="md" icon="arrow-back-outline"
+      style="margin-left: 8px;">
+      <ion-icon name="arrow-back-outline" style="color: #0C1E2E; font-size: 24px;"></ion-icon>
+    </ion-button>
+    <ion-title mode="ios" class="ion-text-center text-large-blue">
+      Vehicle Type Detail
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="bg-light-grey">
+  <ion-refresher [disabled]="canRefresh" slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-row style="height: 100%;">
+    <ion-col class="ion-no-padding">
+      <div class="content" style="height: 100%;">
+        <form (ngSubmit)="onSubmit()" class="form" #syncloanform="ngForm">
+          <ion-list style="height: 100%;">
+            <ion-row class="label-group">
+              <ion-label class="text-medium-red">*Required Field</ion-label>
+            </ion-row>
+
+            <ion-row style="margin-top: 10px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Name" name="name" ngModel
+                  [(ngModel)]="vehicleType.name" required="true" />
+                <label class="hceazy-label" for="name">
+                  Name<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <textarea id="description" name="description" class="hceazy-textarea" placeholder="Description" ngModel
+                  [(ngModel)]="vehicleType.description">
+                </textarea>
+                <label class="hceazy-label" for="description">
+                  Description
+                </label>
+              </div>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="Start Date" id="startDate"
+                  name="startDate" readonly="true" required value="{{ vehicleType.startDate | date: 'dd-MMM-yyyy'}}" />
+                <label class="hceazy-label" for="startDate">
+                  Start Date<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+
+              <ion-modal id="input-date" trigger="startDate" mode="ios">
+                <ng-template>
+                  <ion-content scrollY="false" scrollX="false">
+                    <ion-row>
+                      <ion-col>
+                        <ion-datetime (ionChange)="onChangeDate('start')" max="2050"
+                          style="min-width: 100%; max-height: 350px; border-radius: 10px;" mode="ios" doneText="Set"
+                          cancelText="Cancel" showDefaultButtons="true" required ngModel
+                          [(ngModel)]="vehicleType.startDate" name="startDate" presentation="date">
+                        </ion-datetime>
+                      </ion-col>
+                    </ion-row>
+                  </ion-content>
+                </ng-template>
+              </ion-modal>
+            </ion-row>
+
+            <ion-row style="margin-top: 20px;">
+              <div class="hceazy-input-wrapper">
+                <input autocomplete="off" class="hceazy-input" type="text" placeholder="End Date" id="endDate"
+                  name="endDate" readonly="true" required value="{{ vehicleType.endDate | date: 'dd-MMM-yyyy'}}" />
+                <label class="hceazy-label" for="endDate">
+                  End Date<ion-text color="danger">*</ion-text>
+                </label>
+              </div>
+
+              <ion-modal id="input-date" trigger="endDate" mode="ios">
+                <ng-template>
+                  <ion-content scrollY="false" scrollX="false">
+                    <ion-row>
+                      <ion-col>
+                        <ion-datetime (ionChange)="onChangeDate('end')" max="2050"
+                          style="min-width: 100%; max-height: 350px; border-radius: 10px;" mode="ios" doneText="Set"
+                          cancelText="Cancel" showDefaultButtons="true" required ngModel
+                          [(ngModel)]="vehicleType.endDate" name="endDate" presentation="date">
+                        </ion-datetime>
+                      </ion-col>
+                    </ion-row>
+                  </ion-content>
+                </ng-template>
+              </ion-modal>
+            </ion-row>
+          </ion-list>
+
+          <ion-button class="blue-button" color="primary"
+            [disabled]="!syncloanform.valid || vehicleType.startDate == null || vehicleType.endDate == null"
+            type="submit">
+            Submit
+          </ion-button>
+        </form>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-content>
